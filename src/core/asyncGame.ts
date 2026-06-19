@@ -74,11 +74,15 @@ export function applyTurn(match: AsyncMatch, playerId: string, guess: number): A
 
 // --- URL-safe encoding (base64url, no padding) ---
 
+// Node's Buffer is used only in the test/SSR environment; cast off globalThis
+// so this compiles without pulling Node types into the browser build.
+const nodeBuffer = (globalThis as { Buffer?: { from(d: string, enc: string): { toString(enc: string): string } } }).Buffer;
+
 function toBase64Url(json: string): string {
   const b64 =
     typeof btoa === 'function'
       ? btoa(unescape(encodeURIComponent(json)))
-      : Buffer.from(json, 'utf-8').toString('base64');
+      : nodeBuffer!.from(json, 'utf-8').toString('base64');
   return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
@@ -87,7 +91,7 @@ function fromBase64Url(token: string): string {
   if (typeof atob === 'function') {
     return decodeURIComponent(escape(atob(b64)));
   }
-  return Buffer.from(b64, 'base64').toString('utf-8');
+  return nodeBuffer!.from(b64, 'base64').toString('utf-8');
 }
 
 export function encodeMatch(match: AsyncMatch): string {
