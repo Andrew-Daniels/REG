@@ -6,7 +6,9 @@ House-price-guessing party game with golf scoring. Mobile-first, TDD, free to op
 - `src/core/` — pure game logic (TDD). No React/DOM here.
   - `scoring.ts` golf tiers + ranking · `listing.ts` model + info presets · `game.ts` round state machine
   - `daily.ts` deterministic daily pick + share card · `asyncGame.ts` play-by-link match
-- `src/data/` — `ListingProvider` interface, status/recency filter, bundled `seedListings` (default, free).
+- `src/data/` — `ListingProvider` interface, status/recency filter, bundled `seedListings` (default).
+  - Live data: `realtyApiProvider.ts` (RealtyAPI/Zillow, `REALTYAPI_KEY`) · `rentcastProvider.ts`.
+  - `chooseProvider()` (server, key-aware) vs `HttpProvider`/`clientProvider()` (browser → `/api/listings` proxy).
 - `src/audio/` — `notes.ts` (pure, tested theme) + `engine.ts` (Web Audio playback).
 - `src/ui/` — React screens/components (mobile-first). `src/state/` hooks + settings.
 - `src/net/` — WebSocket client (`useLobby`) + shared `protocol.ts`.
@@ -23,4 +25,5 @@ House-price-guessing party game with golf scoring. Mobile-first, TDD, free to op
   until reveal (see `sanitize` in `server/index.ts`).
 - External resources (Unsplash photos, OSM tiles) must degrade gracefully — components
   render fallbacks so the game works offline / behind strict networks.
-- Data stays behind `ListingProvider` so a free-tier live API can be dropped in later.
+- Data stays behind `ListingProvider`. Live-API keys are server-only — the browser
+  reaches data through the `/api/listings` proxy, never holding a key.

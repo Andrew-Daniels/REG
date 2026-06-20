@@ -5,10 +5,27 @@ join a lobby from their phones with a code, study a real listing (photos +
 map + selected details), and guess the price. Closest guesses score like golf —
 hole-in-one, birdie, par, bogey — and the lowest total wins.
 
-> **Free to operate.** Maps use Leaflet + OpenStreetMap (no key). Sounds and the
+> **Cheap to operate.** Maps use Leaflet + OpenStreetMap (no key). Sounds and the
 > theme song are synthesized with the Web Audio API (no licensing). Listing data
-> comes from a bundled seed dataset by default, with a pluggable adapter for a
-> free-tier real-estate API when a key is supplied.
+> comes from a bundled seed dataset by default, or live **RealtyAPI** (Zillow-backed,
+> real photos) when an API key is supplied.
+
+## Live listing data (RealtyAPI)
+Set a [RealtyAPI](https://www.realtyapi.io) key and the server serves real
+Zillow-backed listings (photos, price, location, beds/baths/sqft, status):
+
+```bash
+export REALTYAPI_KEY=your_key_here   # server-side only — never shipped to the browser
+npm start
+```
+
+How it stays secure & always-on:
+- The key lives **only on the server**. The browser fetches listings through the
+  server's `/api/listings` proxy (`HttpProvider`), so the key is never in the bundle.
+- If no key is set (or the API errors / returns nothing), it falls back to the
+  bundled seed dataset, so the game always runs.
+- `RealtyApiProvider` maps the Zillow search shape defensively; swap providers via
+  `chooseProvider()` in `src/data/index.ts` (RealtyAPI → RentCast → seed).
 
 ## Game modes
 - **Party (local lobby):** host on the big screen, up to 20 players join by code from phones.

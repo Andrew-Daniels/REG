@@ -6,7 +6,7 @@ import { TextSetupScreen } from './ui/TextSetupScreen';
 import { AsyncTurnScreen } from './ui/AsyncTurnScreen';
 import { JoinScreen } from './ui/JoinScreen';
 import { LiveContainer, type LiveIntent } from './ui/LiveContainer';
-import { chooseProvider } from './data';
+import { clientProvider } from './data';
 import { pickDaily } from './core/daily';
 import { decodeMatch, type AsyncMatch } from './core/asyncGame';
 import { presetSettings, type GameSettings } from './state/settings';
@@ -24,7 +24,7 @@ type Route =
   | { name: 'join' }
   | { name: 'live'; intent: LiveIntent };
 
-const provider = chooseProvider();
+const provider = clientProvider();
 
 function readMatchFromHash(): AsyncMatch | null {
   if (typeof window === 'undefined') return null;

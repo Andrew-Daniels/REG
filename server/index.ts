@@ -19,11 +19,13 @@ import {
   lobbyGuess,
   lobbyNext,
 } from './lobby';
-import { chooseProvider } from '../src/data';
+import { chooseProvider, SeedProvider } from '../src/data';
+import type { ListingStatus } from '../src/core/listing';
 import type { ClientMsg, ServerMsg, PublicLobby } from '../src/net/protocol';
 import { WS_PORT } from '../src/net/protocol';
 
 const provider = chooseProvider();
+const seedFallback = new SeedProvider();
 const PORT = Number(process.env.PORT) || WS_PORT;
 const DIST = join(fileURLToPath(new URL('../dist', import.meta.url)));
 
@@ -153,7 +155,36 @@ const MIME: Record<string, string> = {
 
 const server = createServer(async (req, res) => {
   try {
-    const url = (req.url || '/').split('?')[0];
+    const rawUrl = req.url || '/';
+    const url = rawUrl.split('?')[0];
+
+    // Listings proxy: keeps the API key server-side; the browser calls this.
+    if (url === '/api/listings') {
+      const params = new URLSearchParams(rawUrl.split('?')[1] || '');
+      const statuses = (params.get('statuses') || 'closed')
+        .split(',')
+        .filter(Boolean) as ListingStatus[];
+      const recencyDays = params.get('recencyDays');
+      const filter = {
+        statuses: statuses.length ? statuses : (['closed'] as ListingStatus[]),
+        recencyDays: recencyDays != null ? Number(recencyDays) : undefined,
+      };
+      let listings;
+      try {
+        listings = await provider.fetchListings(filter);
+        if (!listings.length) listings = await seedFallback.fetchListings(filter);
+      } catch {
+        listings = await seedFallback.fetchListings(filter);
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=120',
+      });
+      res.end(JSON.stringify(listings));
+      return;
+    }
+
     let filePath = join(DIST, normalize(url === '/' ? '/index.html' : url));
     if (!filePath.startsWith(DIST)) filePath = join(DIST, 'index.html');
     let body: Buffer;
