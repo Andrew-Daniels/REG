@@ -39,7 +39,8 @@ export function SetupScreen({ mode, onStart, onBack }: Props) {
     setS((c) => ({ ...c, players: c.players.filter((_, k) => k !== i) }));
 
   const isParty = mode === 'party';
-  const title = isParty ? '👥 Party Setup' : '🎯 Quick Play Setup';
+  const isHost = mode === 'host';
+  const title = isHost ? '📺 Big Screen Setup' : isParty ? '👥 Pass & Play Setup' : '🎯 Quick Play Setup';
 
   return (
     <div className="screen">
@@ -136,7 +137,7 @@ export function SetupScreen({ mode, onStart, onBack }: Props) {
         disabled={s.statuses.length === 0}
         onClick={() => { sound.click(); onStart(s); }}
       >
-        Tee off ⛳
+        {isHost ? 'Open lobby 📺' : 'Tee off ⛳'}
       </button>
     </div>
   );

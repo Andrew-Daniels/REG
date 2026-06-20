@@ -51,15 +51,31 @@ npm test        # run the TDD suite
 npm run dev     # play locally
 ```
 
+## Running the live (phone-lobby) mode
+```bash
+npm run dev          # client at :5173
+npm run server       # lobby WebSocket server at :8787 (separate terminal)
+# or, production-style (one process serves the built client + WS):
+npm start            # build + serve on :8787
+```
+Open the host on the big screen ("Big Screen Party"), then players open the same
+URL on their phones, tap "Join a Lobby", and enter the 4-letter code.
+
 ## Build roadmap (loop progress)
 - [x] Golf scoring engine (tiers, difficulty scaling, ranking)
 - [x] Listing model + info-share presets + powerup reveal logic
 - [x] Pluggable data provider + status/recency filtering + 24-listing seed dataset
-- [ ] Game session state machine (rounds, guesses, standings, celebrations)
-- [ ] Daily challenge (deterministic 10-house selection + shareable score)
-- [ ] Async link-state encoding for text-message play
-- [ ] React UI: lobby, big-screen, phone controller (mobile-first)
-- [ ] Leaflet map + photo viewer
-- [ ] Web Audio sound engine (ticking timer, theme song, celebrations)
-- [ ] Multiplayer lobby server (WebSocket)
-- [ ] Screenshot-driven design iteration
+- [x] Game session state machine (rounds, guesses, standings, celebrations)
+- [x] Daily challenge (deterministic 10-house selection + shareable score)
+- [x] Async link-state encoding for text-message play
+- [x] React UI: home, setup, big-screen, phone controller (mobile-first)
+- [x] Leaflet map + photo viewer (graceful offline fallbacks)
+- [x] Web Audio sound engine (ticking timer, theme song, celebrations)
+- [x] Multiplayer lobby server (WebSocket, up to 20 players, answer-hiding)
+- [x] Screenshot-driven design iteration (Playwright)
+
+### Possible next steps
+- Live API adapter (e.g. RentCast free tier) implementing `ListingProvider`
+- Per-player round timer enforcement on the server (auto-lock at 0)
+- Reconnect polish + lobby cleanup TTLs
+- Richer celebrations / leaderboard persistence across sessions

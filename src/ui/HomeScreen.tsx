@@ -1,7 +1,7 @@
 import { sound } from '../audio/engine';
 import { MuteButton } from './MuteButton';
 
-export type Mode = 'solo' | 'party' | 'daily' | 'text';
+export type Mode = 'solo' | 'party' | 'daily' | 'text' | 'host' | 'join';
 
 export function HomeScreen({ onPick }: { onPick: (m: Mode) => void }) {
   const go = (m: Mode) => {
@@ -21,8 +21,10 @@ export function HomeScreen({ onPick }: { onPick: (m: Mode) => void }) {
         <p>Guess the home price. Score like golf. Lowest wins.</p>
       </div>
       <div className="menu">
-        <button className="btn btn-primary" onClick={() => go('party')}>👥 Party Game</button>
+        <button className="btn btn-primary" onClick={() => go('host')}>📺 Big Screen Party</button>
+        <button className="btn btn-ghost" onClick={() => go('join')}>📱 Join a Lobby</button>
         <button className="btn btn-gold" onClick={() => go('daily')}>📅 Daily Challenge</button>
+        <button className="btn btn-soft" onClick={() => go('party')}>👥 Pass &amp; Play</button>
         <button className="btn btn-soft" onClick={() => go('solo')}>🎯 Solo / Quick Play</button>
         <button className="btn btn-soft" onClick={() => go('text')}>💬 Play by Text</button>
       </div>

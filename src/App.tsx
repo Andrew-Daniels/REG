@@ -4,6 +4,8 @@ import { SetupScreen } from './ui/SetupScreen';
 import { GameScreen } from './ui/GameScreen';
 import { TextSetupScreen } from './ui/TextSetupScreen';
 import { AsyncTurnScreen } from './ui/AsyncTurnScreen';
+import { JoinScreen } from './ui/JoinScreen';
+import { LiveContainer, type LiveIntent } from './ui/LiveContainer';
 import { SeedProvider } from './data/seedProvider';
 import { pickDaily } from './core/daily';
 import { decodeMatch, type AsyncMatch } from './core/asyncGame';
@@ -18,7 +20,9 @@ type Route =
   | { name: 'setup'; mode: Mode }
   | { name: 'game'; settings: GameSettings; listings: Listing[]; dailyDate?: string }
   | { name: 'text-setup' }
-  | { name: 'async'; match: AsyncMatch };
+  | { name: 'async'; match: AsyncMatch }
+  | { name: 'join' }
+  | { name: 'live'; intent: LiveIntent };
 
 const provider = new SeedProvider();
 
@@ -89,6 +93,7 @@ export default function App() {
           onPick={(mode) => {
             if (mode === 'daily') return startDaily();
             if (mode === 'text') return setRoute({ name: 'text-setup' });
+            if (mode === 'join') return setRoute({ name: 'join' });
             setRoute({ name: 'setup', mode });
           }}
         />
@@ -98,7 +103,11 @@ export default function App() {
         <SetupScreen
           mode={route.mode}
           onBack={home}
-          onStart={(s) => startGame(route.mode, s)}
+          onStart={(s) =>
+            route.mode === 'host'
+              ? setRoute({ name: 'live', intent: { type: 'host', settings: s } })
+              : startGame(route.mode, s)
+          }
         />
       );
     case 'game':
@@ -117,6 +126,15 @@ export default function App() {
       );
     case 'async':
       return <AsyncTurnScreen match={route.match} onExit={home} />;
+    case 'join':
+      return (
+        <JoinScreen
+          onBack={home}
+          onJoin={(code, name) => setRoute({ name: 'live', intent: { type: 'join', code, name } })}
+        />
+      );
+    case 'live':
+      return <LiveContainer intent={route.intent} onExit={home} />;
   }
 }
 
