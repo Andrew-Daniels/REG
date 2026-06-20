@@ -19,11 +19,11 @@ import {
   lobbyGuess,
   lobbyNext,
 } from './lobby';
-import { SeedProvider } from '../src/data/seedProvider';
+import { chooseProvider } from '../src/data';
 import type { ClientMsg, ServerMsg, PublicLobby } from '../src/net/protocol';
 import { WS_PORT } from '../src/net/protocol';
 
-const provider = new SeedProvider();
+const provider = chooseProvider();
 const PORT = Number(process.env.PORT) || WS_PORT;
 const DIST = join(fileURLToPath(new URL('../dist', import.meta.url)));
 
